@@ -21,6 +21,12 @@ window.onresize = (_) => {
     view.onResize(state.getPageContents())
 }
 
+window.onscroll = (_) => {
+    if (view) {
+        view.onScroll()
+    }
+}
+
 function onContentsListReceived(contentsList) {
     view = new View(document, (viewEvent, eventValue) => {
         switch (viewEvent) {

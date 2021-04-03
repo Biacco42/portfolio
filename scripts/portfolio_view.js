@@ -10,6 +10,7 @@ export default class View {
     tagsList
     contentsContainer
     contentsWrapper
+    cols
     pageIndicatorContainer
     pageIndicator
     popupBackground
@@ -35,6 +36,12 @@ export default class View {
         this.popup = document.getElementById("popup")
         this.popupContent = document.getElementById("popup_content")
 
+        this.cols = [
+            document.createElement("div"),
+            document.createElement("div"),
+            document.createElement("div")
+        ]
+
         this.actionHandler = actionHandler
         this.colNum = View.numberOfCols()
         this.intersectionObserver = View.createIntersectionObserver()
@@ -57,7 +64,34 @@ export default class View {
             this.intersectionObserver = View.createIntersectionObserver()
             this.showPage(pageContents)
         }
+
+        this.onScroll()
     }
+
+    onScroll() {
+        const scroll = window.scrollY
+        const scrollMax = this.mainView.clientHeight - window.innerHeight
+
+        if (0 < scrollMax) {
+            const scrollRate = scroll / scrollMax
+
+            window.setTimeout(() => {
+                const colHeights = this.cols.map(column => {
+                    return column.clientHeight;
+                })
+                const maxHeight = Math.max(...colHeights)
+
+                const heightDiffs = colHeights.map(colHeight => {
+                    return maxHeight - colHeight
+                })
+
+                this.cols.forEach((col, index) => {
+                    col.style.marginTop = (heightDiffs[index] * scrollRate) + "px"
+                })
+            })
+        }
+    }
+
 
     showHeader() {
         View.showBevel(this.header)
@@ -130,6 +164,7 @@ export default class View {
                 this.contentsContainer.appendChild(contentsWrapper)
                 this.contentsWrapper = contentsWrapper
                 this.colNum = colNum
+                this.cols = colsDOM
             })
         }, 450)
 
